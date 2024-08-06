@@ -4,6 +4,7 @@ import eu.kanade.tachiyomi.animesource.model.AnimesPage
 import eu.kanade.tachiyomi.animesource.model.Video
 import eu.kanade.tachiyomi.animesource.model.SEpisode
 import eu.kanade.tachiyomi.animesource.model.SAnime
+import eu.kanade.tachiyomi.util.asJsoup
 import okhttp3.Request
 import okhttp3.Response
 import org.jsoup.nodes.Document
@@ -17,10 +18,21 @@ abstract class ParsedAnimeHttpSource : AnimeHttpSource() {
 
     /**
      * Parses the response from the site and returns a [AnimesPage] object.
+     *
      * @param response the response from the site.
      */
     override fun popularAnimeParse(response: Response): AnimesPage {
-        throw Exception("Stub!")
+        val document = response.asJsoup()
+
+        val animes = document.select(popularAnimeSelector()).map { element ->
+            popularAnimeFromElement(element)
+        }
+
+        val hasNextPage = popularAnimeNextPageSelector()?.let { selector ->
+            document.select(selector).first()
+        } != null
+
+        return AnimesPage(animes, hasNextPage)
     }
 
     /**
@@ -29,7 +41,7 @@ abstract class ParsedAnimeHttpSource : AnimeHttpSource() {
     protected abstract fun popularAnimeSelector(): String
 
     /**
-     * Returns a anime from the given [element]. Most sites only show the title and the url, it's
+     * Returns an anime from the given [element]. Most sites only show the title and the url, it's
      * totally fine to fill only those two values.
      *
      * @param element an element obtained from [popularAnimeSelector].
@@ -48,7 +60,17 @@ abstract class ParsedAnimeHttpSource : AnimeHttpSource() {
      * @param response the response from the site.
      */
     override fun searchAnimeParse(response: Response): AnimesPage {
-        throw Exception("Stub!")
+        val document = response.asJsoup()
+
+        val animes = document.select(searchAnimeSelector()).map { element ->
+            searchAnimeFromElement(element)
+        }
+
+        val hasNextPage = searchAnimeNextPageSelector()?.let { selector ->
+            document.select(selector).first()
+        } != null
+
+        return AnimesPage(animes, hasNextPage)
     }
 
     /**
@@ -57,7 +79,7 @@ abstract class ParsedAnimeHttpSource : AnimeHttpSource() {
     protected abstract fun searchAnimeSelector(): String
 
     /**
-     * Returns a anime from the given [element]. Most sites only show the title and the url, it's
+     * Returns an anime from the given [element]. Most sites only show the title and the url, it's
      * totally fine to fill only those two values.
      *
      * @param element an element obtained from [searchAnimeSelector].
@@ -76,7 +98,17 @@ abstract class ParsedAnimeHttpSource : AnimeHttpSource() {
      * @param response the response from the site.
      */
     override fun latestUpdatesParse(response: Response): AnimesPage {
-        throw Exception("Stub!")
+        val document = response.asJsoup()
+
+        val animes = document.select(latestUpdatesSelector()).map { element ->
+            latestUpdatesFromElement(element)
+        }
+
+        val hasNextPage = latestUpdatesNextPageSelector()?.let { selector ->
+            document.select(selector).first()
+        } != null
+
+        return AnimesPage(animes, hasNextPage)
     }
 
     /**
@@ -85,7 +117,7 @@ abstract class ParsedAnimeHttpSource : AnimeHttpSource() {
     protected abstract fun latestUpdatesSelector(): String
 
     /**
-     * Returns a anime from the given [element]. Most sites only show the title and the url, it's
+     * Returns an anime from the given [element]. Most sites only show the title and the url, it's
      * totally fine to fill only those two values.
      *
      * @param element an element obtained from [latestUpdatesSelector].
@@ -99,12 +131,12 @@ abstract class ParsedAnimeHttpSource : AnimeHttpSource() {
     protected abstract fun latestUpdatesNextPageSelector(): String?
 
     /**
-     * Parses the response from the site and returns the details of a anime.
+     * Parses the response from the site and returns the details of an anime.
      *
      * @param response the response from the site.
      */
     override fun animeDetailsParse(response: Response): SAnime {
-        throw Exception("Stub!")
+        return animeDetailsParse(response.asJsoup())
     }
 
     /**
@@ -120,7 +152,8 @@ abstract class ParsedAnimeHttpSource : AnimeHttpSource() {
      * @param response the response from the site.
      */
     override fun episodeListParse(response: Response): List<SEpisode> {
-        throw Exception("Stub!")
+        val document = response.asJsoup()
+        return document.select(episodeListSelector()).map { episodeFromElement(it) }
     }
 
     /**
@@ -129,19 +162,20 @@ abstract class ParsedAnimeHttpSource : AnimeHttpSource() {
     protected abstract fun episodeListSelector(): String
 
     /**
-     * Returns a episode from the given element.
+     * Returns an episode from the given element.
      *
      * @param element an element obtained from [episodeListSelector].
      */
     protected abstract fun episodeFromElement(element: Element): SEpisode
 
     /**
-     * Parses the response from the site and returns a list of videos.
+     * Parses the response from the site and returns the page list.
      *
      * @param response the response from the site.
      */
     override fun videoListParse(response: Response): List<Video> {
-        throw Exception("Stub!")
+        val document = response.asJsoup()
+        return document.select(videoListSelector()).map { videoFromElement(it) }
     }
 
     /**
@@ -156,12 +190,17 @@ abstract class ParsedAnimeHttpSource : AnimeHttpSource() {
      */
     protected abstract fun videoFromElement(element: Element): Video
 
+    /**
+     * Parse the response from the site and returns the absolute url to the source video.
+     *
+     * @param response the response from the site.
+     */
     override fun videoUrlParse(response: Response): String {
-        throw Exception("Stub!")
+        return videoUrlParse(response.asJsoup())
     }
 
     /**
-     * Returns the absolute url to the video url from the document.
+     * Returns the absolute url to the source image from the document.
      *
      * @param document the parsed document.
      */

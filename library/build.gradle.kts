@@ -34,11 +34,22 @@ android {
 
     kotlinOptions {
         jvmTarget = javaVersion.toString()
+        freeCompilerArgs += listOf(
+            "-Xcontext-receivers",
+            "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
+            "-opt-in=kotlinx.serialization.ExperimentalSerializationApi",
+        )
     }
 }
 
 dependencies {
-    compileOnly(libs.okhttp)
+
+    implementation(libs.okhttp.core)
+    implementation(libs.okhttp.logging)
+    implementation(libs.okhttp.brotli)
+    implementation(libs.okhttp.dnsoverhttps)
+    implementation(libs.okio)
+
     compileOnly(libs.jsoup)
     compileOnly(libs.rxjava)
     compileOnly(libs.rxandroid)
