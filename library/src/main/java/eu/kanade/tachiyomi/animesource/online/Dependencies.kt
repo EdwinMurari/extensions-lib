@@ -22,7 +22,7 @@ object Dependencies {
         jsonProvider = provider
     }
 
-    fun getNetworkHelper(): NetworkHelper = networkHelperProvider.invoke()
+    internal fun getNetworkHelper(): NetworkHelper = networkHelperProvider.invoke()
 
     internal fun getContext(): Context = contextProvider.invoke()
 

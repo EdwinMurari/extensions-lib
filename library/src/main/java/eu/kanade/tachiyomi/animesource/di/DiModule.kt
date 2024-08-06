@@ -11,5 +11,6 @@ object DiModule : InjektModule {
     override fun InjektRegistrar.registerInjectables() {
         addSingleton(Dependencies.getContext() as Application)
         addSingleton(Dependencies.getJson())
+        addSingleton(Dependencies.getNetworkHelper())
     }
 }

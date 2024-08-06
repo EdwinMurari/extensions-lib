@@ -18,6 +18,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import rx.Observable
+import uy.kohesive.injekt.injectLazy
 import java.net.URI
 import java.net.URISyntaxException
 import java.security.MessageDigest
@@ -31,7 +32,7 @@ abstract class AnimeHttpSource : AnimeCatalogueSource {
     /**
      * Network service.
      */
-    protected val network: NetworkHelper by lazy { Dependencies.getNetworkHelper() }
+    protected val network: NetworkHelper by injectLazy()
 
     /**
      * Base url of the website without the trailing slash, like: http://mysite.com
