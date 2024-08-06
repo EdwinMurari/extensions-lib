@@ -31,7 +31,7 @@ abstract class AnimeHttpSource : AnimeCatalogueSource {
     /**
      * Network service.
      */
-    protected val network: NetworkHelper by lazy { AnimeHttpSourceDependencies.getNetworkHelper() }
+    protected val network: NetworkHelper by lazy { Dependencies.getNetworkHelper() }
 
     /**
      * Base url of the website without the trailing slash, like: http://mysite.com

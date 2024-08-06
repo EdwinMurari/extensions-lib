@@ -1,6 +1,8 @@
 package eu.kanade.tachiyomi.animesource.model
 
-interface SEpisode {
+import java.io.Serializable
+
+interface SEpisode : Serializable {
 
     var url: String
 
@@ -12,10 +14,30 @@ interface SEpisode {
 
     var scanlator: String?
 
-    companion object {
-        fun create(): SEpisode {
-            throw Exception("Stub!")
-        }
+    fun copyFrom(other: SEpisode) {
+        name = other.name
+        url = other.url
+        date_upload = other.date_upload
+        episode_number = other.episode_number
+        scanlator = other.scanlator
     }
 
+    companion object {
+        fun create(): SEpisode {
+            return SEpisodeImpl()
+        }
+    }
+}
+
+class SEpisodeImpl : SEpisode {
+
+    override lateinit var url: String
+
+    override lateinit var name: String
+
+    override var date_upload: Long = 0
+
+    override var episode_number: Float = -1f
+
+    override var scanlator: String? = null
 }

@@ -2,6 +2,7 @@ package eu.kanade.tachiyomi.animesource
 
 import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.animesource.model.AnimesPage
+import eu.kanade.tachiyomi.util.awaitSingle
 import rx.Observable
 
 interface AnimeCatalogueSource : AnimeSource {
@@ -19,33 +20,36 @@ interface AnimeCatalogueSource : AnimeSource {
     /**
      * Get a page with a list of anime.
      *
-     * @since extensions-lib 14
+     * @since extensions-lib 1.5
      * @param page the page number to retrieve.
      */
+    @Suppress("DEPRECATION")
     suspend fun getPopularAnime(page: Int): AnimesPage {
-       throw Exception("Stub!") 
+        return fetchPopularAnime(page).awaitSingle()
     }
 
     /**
      * Get a page with a list of anime.
      *
-     * @since extensions-lib 14
+     * @since extensions-lib 1.5
      * @param page the page number to retrieve.
      * @param query the search query.
      * @param filters the list of filters to apply.
      */
+    @Suppress("DEPRECATION")
     suspend fun getSearchAnime(page: Int, query: String, filters: AnimeFilterList): AnimesPage {
-        throw Exception("Stub!")
+        return fetchSearchAnime(page, query, filters).awaitSingle()
     }
 
     /**
      * Get a page with a list of latest anime updates.
      *
-     * @since extensions-lib 14
+     * @since extensions-lib 1.5
      * @param page the page number to retrieve.
      */
+    @Suppress("DEPRECATION")
     suspend fun getLatestUpdates(page: Int): AnimesPage {
-        throw Exception("Stub!")
+        return fetchLatestUpdates(page).awaitSingle()
     }
 
     /**

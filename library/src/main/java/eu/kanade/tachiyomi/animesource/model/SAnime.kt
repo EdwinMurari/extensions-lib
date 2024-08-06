@@ -1,6 +1,8 @@
 package eu.kanade.tachiyomi.animesource.model
 
-interface SAnime {
+import java.io.Serializable
+
+interface SAnime : Serializable {
 
     var url: String
 
@@ -12,28 +14,33 @@ interface SAnime {
 
     var description: String?
 
-    /**
-     * A string containing list of all genres separated with `", "`
-     */
     var genre: String?
 
-    /**
-     * An "enum" value. Refer to the values in the [SAnime companion object](https://github.com/jmir1/extensions-lib/blob/a2afb04d892e94d21cd4ade7094dca27f4c0c180/library/src/main/java/eu/kanade/tachiyomi/animesource/model/SAnime.kt#L25).
-     */
     var status: Int
 
     var thumbnail_url: String?
 
-    /**
-     * Useful to exclude animes/movies that will always only have the same episode list
-     * from the global updates.
-     */
     var update_strategy: AnimeUpdateStrategy
 
-    /**
-     * Tells the app if it should call [fetchAnimeDetails].
-     */
     var initialized: Boolean
+
+    fun getGenres(): List<String>? {
+        if (genre.isNullOrBlank()) return null
+        return genre?.split(", ")?.map { it.trim() }?.filterNot { it.isBlank() }?.distinct()
+    }
+
+    fun copy() = create().also {
+        it.url = url
+        it.title = title
+        it.artist = artist
+        it.author = author
+        it.description = description
+        it.genre = genre
+        it.status = status
+        it.thumbnail_url = thumbnail_url
+        it.update_strategy = update_strategy
+        it.initialized = initialized
+    }
 
     companion object {
         const val UNKNOWN = 0
@@ -45,8 +52,30 @@ interface SAnime {
         const val ON_HIATUS = 6
 
         fun create(): SAnime {
-            throw Exception("Stub!")
+            return SAnimeImpl()
         }
     }
+}
 
+class SAnimeImpl : SAnime {
+
+    override lateinit var url: String
+
+    override lateinit var title: String
+
+    override var artist: String? = null
+
+    override var author: String? = null
+
+    override var description: String? = null
+
+    override var genre: String? = null
+
+    override var status: Int = 0
+
+    override var thumbnail_url: String? = null
+
+    override var initialized: Boolean = false
+
+    override var update_strategy: AnimeUpdateStrategy = AnimeUpdateStrategy.ALWAYS_UPDATE
 }
